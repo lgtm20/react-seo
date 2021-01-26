@@ -5,28 +5,45 @@ import { env } from './config'
 
 class App extends Component {
   timeout: NodeJS.Timeout
-  state: { textIdx: number }
-  textArray: string[]
+  state: {
+    counter: number
+    result: JSON | null
+  }
 
   constructor(props: ReactPropTypes) {
     super(props)
-    this.state = { textIdx: 0 }
-    this.textArray = [
-      'eat',
-      'sleep',
-      'drink',
-      'snore',
-      'foo',
-      'buzz',
-      'whatever',
-    ]
+    this.state = { counter: 0, result: null }
   }
 
   componentDidMount() {
     this.timeout = setInterval(() => {
-      const idx = this.state.textIdx
-      this.setState({ textIdx: idx + 1 })
-    }, 1500)
+      const counter = this.state.counter
+      this.setState({ counter: counter + 1 })
+    }, 1000)
+    this.fetch()
+  }
+
+  fetch() {
+    let path = window.location.pathname
+    if (!path || path === '/') {
+      path = '/request'
+    }
+    fetch(`https://mockbin.com${path}`)
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            isLoaded: true,
+            result: result,
+          })
+        },
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error,
+          })
+        },
+      )
   }
 
   componentDidUnmount() {
@@ -34,7 +51,8 @@ class App extends Component {
   }
 
   render() {
-    const text = this.textArray[this.state.textIdx % this.textArray.length]
+    const counter = this.state.counter
+    const result = this.state.result
     return (
       <div className="app">
         <Helmet>
@@ -42,11 +60,14 @@ class App extends Component {
           <title>React SEO</title>
           <link rel="canonical" href={env.CANONICAL_URL} />
         </Helmet>
-        <div>Hello world!</div>
         <section>
-          <h1>I&apos;m a React developer</h1>
           <p>
-            I like to <span>{text}</span>
+            <pre>Counter: {counter}</pre>
+          </p>
+        </section>
+        <section>
+          <p>
+            <pre>Result: {JSON.stringify(result, null, 2)}</pre>
           </p>
         </section>
       </div>

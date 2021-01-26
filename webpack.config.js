@@ -57,7 +57,8 @@ const loadEnvConfigs = (env) => {
 }
 
 module.exports = (env, argv) => {
-  const ENV = env && env.ENV ? env.ENV : 'local'
-  console.log(`Environment: ${env} Mode: ${argv.mode}`)
-  return merge(baseConfigs(), loadEnvConfigs(ENV))
+  console.log(env)
+  const APP_ENV = env && env.APP_ENV ? env.APP_ENV : 'local'
+  console.log(`Environment: ${APP_ENV} Mode: ${argv.mode}`)
+  return merge(baseConfigs(), loadEnvConfigs(APP_ENV))
 }
